@@ -9,6 +9,13 @@ using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- Configuration ---
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>() // Connection string secrets 
+    .AddEnvironmentVariables();
+
 var connectionStringPostgresql = builder.Configuration.GetConnectionString("PostgreSQLConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options => { options.UseNpgsql(connectionStringPostgresql); });
