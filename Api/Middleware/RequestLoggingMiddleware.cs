@@ -1,104 +1,97 @@
+using System.Diagnostics;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using Base;
 
-
-namespace Ots.Api.Middleware;
+namespace Api.Middleware;
 
 public class RequestLoggingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;
 
-
     public RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
     {
         _next = next;
         _logger = loggerFactory.CreateLogger<RequestLoggingMiddleware>();
+
     }
 
     public async Task Invoke(HttpContext context)
     {
+        var traceId = Guid.NewGuid().ToString();
+        var sw = Stopwatch.StartNew();
+
+        var requestText = await FormatRequest(context.Request);
+
+        var originalBody = context.Response.Body;
+        using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+
         try
         {
-            _logger.LogInformation("Request {method}  -  {url} => {statusCode}   invoked",
-                             context.Request?.Method,
-                             context.Request?.Path.Value,
-                             context.Response?.StatusCode);
+            await _next(context);
+            sw.Stop();
 
+            var responseText = await FormatResponse(context.Response);
+
+            var logText = new StringBuilder();
+            logText.AppendLine("----- HTTP LOG START -----");
+            logText.AppendLine($"TraceId     : {traceId}");
+            logText.AppendLine($"Timestamp   : {DateTime.UtcNow}");
+            logText.AppendLine($"Method      : {context.Request.Method}");
+            logText.AppendLine($"Path        : {context.Request.Path}");
+            logText.AppendLine($"StatusCode  : {context.Response.StatusCode}");
+            logText.AppendLine($"Duration    : {sw.ElapsedMilliseconds} ms");
+            logText.AppendLine($"Request     : {requestText}");
+            logText.AppendLine($"Response    : {responseText}");
+            logText.AppendLine("----- HTTP LOG END -----\n");
+
+            // Console ve dosyaya logla
+            _logger.LogInformation(logText.ToString());
+            await File.AppendAllTextAsync("logs.txt", logText + Environment.NewLine);
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            sw.Stop();
+            _logger.LogError($"TraceId: {traceId} | Exception: {ex.Message}");
+            await HandleExceptionAsync(context, ex, traceId);
         }
-        finally
-        {
-            var originalBodyStream = context.Response.Body;
-            var ReqText = await FormatRequest(context.Request);
-            var RspText = "";
 
-            using (var responseBody = new MemoryStream())
-            {
-                try
-                {
-                    context.Response.Body = responseBody;
-                    await _next(context);
-                    RspText = await FormatResponse(context?.Response);
-                    await responseBody.CopyToAsync(originalBodyStream);
-
-                    // log 
-                    _logger.LogInformation($"ResponseCode= {context.Response.StatusCode} ||  Request= {ReqText}  ||  Response= {RspText} ");
-                }
-                catch (Exception ex)
-                {
-                    // log 
-                    _logger.LogInformation($"ResponseCode= {context.Response.StatusCode} || Error = {ex.ToString()}");
-                    await HandleExceptionAsync(context, ex);
-
-                }
-
-
-
-            }
-        }
-    }
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
-    {
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-        await context.Response.WriteAsync(new ErrorDetail()
-        {
-            StatusCode = context.Response.StatusCode,
-            Message = "Internal Server Error"
-        }.ToString());
+        responseBody.Seek(0, SeekOrigin.Begin);
+        await responseBody.CopyToAsync(originalBody);
     }
 
     private async Task<string> FormatRequest(HttpRequest request)
     {
-        var bodyAsText = "";
-        try
-        {
-            using (var bodyReader = new StreamReader(request.Body))
-            {
-                bodyAsText = await bodyReader.ReadToEndAsync();
-                request.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyAsText));
-            }
-        }
-        catch (Exception ex)
-        {
-
-        }
-
-        return $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString} {bodyAsText}";
+        request.EnableBuffering();
+        var body = await new StreamReader(request.Body).ReadToEndAsync();
+        request.Body.Position = 0;
+        return $"{request.Scheme} {request.Method} {request.Path} {request.QueryString} \nBody: {body}";
     }
+
     private async Task<string> FormatResponse(HttpResponse response)
     {
-        var sr = new StreamReader(response.Body);
         response.Body.Seek(0, SeekOrigin.Begin);
-        var text = await sr.ReadToEndAsync();
+        var body = await new StreamReader(response.Body).ReadToEndAsync();
         response.Body.Seek(0, SeekOrigin.Begin);
-
-        return $"Response {text}";
+        return body;
     }
 
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex, string traceId)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+        var error = new ErrorDetail
+        {
+            StatusCode = context.Response.StatusCode,
+            Message = "Internal Server Error",
+            TraceId = traceId
+        };
+
+        var json = JsonSerializer.Serialize(error);
+        await context.Response.WriteAsync(json);
+    }
 }

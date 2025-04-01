@@ -1,26 +1,26 @@
-using System.Net;
+    using System.Net;
 
-namespace Api.Middleware;
+    namespace Api.Middleware;
 
-public class HeartBeatMiddleware
-{
-    public readonly RequestDelegate next;
-
-    public HeartBeatMiddleware(RequestDelegate next)
+    public class HeartBeatMiddleware
     {
-        this.next = next;
-    }
+        public readonly RequestDelegate next;
 
-    public async Task InvokeAsync(HttpContext context)
-    {
-        if (context.Request.Path.StartsWithSegments("/api/Customers/GetById/99"))
+        public HeartBeatMiddleware(RequestDelegate next)
         {
-            context.Response.ContentType = "text/plain";
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
-            await context.Response.WriteAsync("Hello World!");
-            return;
+            this.next = next;
         }
-        
-        await next(context);
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            if (context.Request.Path.StartsWithSegments("/api/Customers/GetById/99"))
+            {
+                context.Response.ContentType = "text/plain";
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                await context.Response.WriteAsync("Alive");
+                return;
+            }
+            
+            await next(context);
+        }
     }
-}

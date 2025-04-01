@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Api;
 using AutoMapper;
+using Api.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<HeartBeatMiddleware>();
+
+
 app.UseAuthorization();
 app.MapControllers();
 

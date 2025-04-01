@@ -1019,7 +1019,7 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.0"
         },
         "runtime": {
-          "Base.dll": {}
+          "base.dll": {}
         }
       }
     }
