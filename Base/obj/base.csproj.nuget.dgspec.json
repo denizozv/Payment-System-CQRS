@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\base\\base.csproj": {}
+    "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Base\\Base.csproj": {}
   },
   "projects": {
-    "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\base\\base.csproj": {
+    "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Base\\Base.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\base\\base.csproj",
-        "projectName": "base",
-        "projectPath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\base\\base.csproj",
+        "projectUniqueName": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Base\\Base.csproj",
+        "projectName": "Base",
+        "projectPath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Base\\Base.csproj",
         "packagesPath": "C:\\Users\\deniz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\base\\obj\\",
+        "outputPath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Base\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

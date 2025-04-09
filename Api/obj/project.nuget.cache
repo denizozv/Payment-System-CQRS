@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "KQNXDU9hKlU=",
+  "dgSpecHash": "KTBzf0kHUc8=",
   "success": true,
   "projectFilePath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Api\\Api.csproj",
   "expectedPackageFiles": [
@@ -104,7 +104,7 @@
       "code": "NU1608",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Bağımlılık kısıtlaması dışında algılanan paket sürümü: MediatR.Extensions.Microsoft.DependencyInjection 11.1.0, MediatR (>= 11.0.0 && < 12.0.0) gerektiriyor ancak sürüm MediatR 12.4.1 çözümlenmiş.",
+      "message": "Detected package version outside of dependency constraint: MediatR.Extensions.Microsoft.DependencyInjection 11.1.0 requires MediatR (>= 11.0.0 && < 12.0.0) but version MediatR 12.4.1 was resolved.",
       "libraryId": "MediatR",
       "targetGraphs": [
         "net8.0"

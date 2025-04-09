@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "CVpr/ljvOVE=",
+  "dgSpecHash": "iXh6lUKoAVM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\base\\base.csproj",
+  "projectFilePath": "C:\\Users\\deniz\\source\\repos\\aw-3-denizozv\\Base\\Base.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\deniz\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\deniz\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",
@@ -97,7 +97,7 @@
       "code": "NU1608",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Bağımlılık kısıtlaması dışında algılanan paket sürümü: MediatR.Extensions.Microsoft.DependencyInjection 11.1.0, MediatR (>= 11.0.0 && < 12.0.0) gerektiriyor ancak sürüm MediatR 12.0.0 çözümlenmiş.",
+      "message": "Detected package version outside of dependency constraint: MediatR.Extensions.Microsoft.DependencyInjection 11.1.0 requires MediatR (>= 11.0.0 && < 12.0.0) but version MediatR 12.0.0 was resolved.",
       "libraryId": "MediatR",
       "targetGraphs": [
         "net8.0"
